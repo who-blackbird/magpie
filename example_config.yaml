@@ -1,0 +1,26 @@
+outdir:
+    /path/to/out 
+
+logdir:
+    /path/to/log
+
+samples:
+    SAMPLE: /path/to/fastq.fof
+
+sniffles_se:
+    5
+
+threads:
+    8
+
+genome:
+    /path/to/ref
+
+regions:
+    /path/to/regions.bed
+
+annotsv:
+    /path/to/AnnotSV.tcl
+
+annotsv_path:
+    /path/to/AnnotSV_{version}
