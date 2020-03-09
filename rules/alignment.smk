@@ -6,14 +6,14 @@ def get_all_samples(wildcards):
 
 rule minimap2_align:
     input:
-        fq = f"{OUTDIR}/fastq/{{sample}}.fastq",
+        fq = "{OUTDIR}/fastq/{{sample}}.fastq",
         genome = config["genome"]
     output:
-        f"{OUTDIR}/minimap2/alignment/{{sample}}.bam"
+        "{OUTDIR}/minimap2/alignment/{{sample}}.bam"
     threads:
         config["threads"]
     log:
-        f"{LOGDIR}/minimap2/{{sample}}.log"
+        "{LOGDIR}/minimap2/{{sample}}.log"
     shell:
         """
         minimap2 --MD -ax map-ont -t {threads} \
@@ -27,11 +27,11 @@ rule minimap2_align:
         #fq = get_samples,
         #genome = config["genome"]
     #output:
-        #protected(f"{OUTDIR}/ngmlr/alignment/{{sample}}.bam")
+        #protected("{OUTDIR}/ngmlr/alignment/{{sample}}.bam")
     #threads:
         #config["threads"]
     #log:
-        #f"{LOGDIR}/ngmlr/{{sample}}.log"
+        #"{LOGDIR}/ngmlr/{{sample}}.log"
     #shell:
         #"""
         #zcat {input.fq} | \
@@ -41,11 +41,11 @@ rule minimap2_align:
 
 rule samtools_index:
     input:
-        f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam"
+        "{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam"
     output:
-        f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam.bai"
+        "{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam.bai"
     log:
-        f"{LOGDIR}/{{aligner}}/samtools_index/{{sample}}.log"
+        "{LOGDIR}/{{aligner}}/samtools_index/{{sample}}.log"
     shell:
         """
         samtools index {input} 2> {log}

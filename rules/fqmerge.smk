@@ -8,7 +8,7 @@ rule fq_merge:
     input:
         get_samples
     output:
-        f"{OUTDIR}/fastq/{{sample}}.fastq"
+        "{OUTDIR}/fastq/{{sample}}.fastq"
     shell:
         """
         cat {input} | xargs cat > {output}

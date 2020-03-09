@@ -18,11 +18,11 @@ include: "rules/snps.smk"
 
 rule fast:
     input:
-        expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
+        expand("{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/sniffles_SVs/{{sample}}.vcf",
+        expand("{OUTDIR}/minimap2/sniffles_svs/{{sample}}.vcf",
                sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/sniffles_annotate/{{sample}}_annot.vcf.tsv",
+        expand("{OUTDIR}/minimap2/sniffles_annotate/{{sample}}_annot.vcf.tsv",
                sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/longshot/{{sample}}.merged.vcf.gz",
+        expand("{OUTDIR}/minimap2/longshot/{{sample}}.merged.vcf.gz",
                sample=config["samples"])

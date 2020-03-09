@@ -1,14 +1,14 @@
 rule sniffles_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam.bai"
+        bam = "{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam",
+        bai = "{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam.bai"
     output:
-        f"{OUTDIR}/{{aligner}}/sniffles_SVs/{{sample}}.vcf"
+        "{OUTDIR}/{{aligner}}/sniffles_svs/{{sample}}.vcf"
     params:
         se = config["sniffles_se"],
     threads: 
         config["threads"]
     log:
-        f"{LOGDIR}/{{aligner}}/sniffles_SVs/{{sample}}.log"
+        "{LOGDIR}/{{aligner}}/sniffles_svs/{{sample}}.log"
     shell:
         "sniffles -s {params.se} --mapped_reads {input.bam} --vcf {output} --threads {threads} 2> {log}"

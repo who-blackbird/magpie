@@ -1,10 +1,10 @@
 rule annotate_vcf:
     input:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_SVs/{{sample}}.vcf"
+        "{OUTDIR}/{{aligner}}/{{caller}}_SVs/{{sample}}.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_annotate/{{sample}}_annot.vcf.tsv"
+        "{OUTDIR}/{{aligner}}/{{caller}}_annotate/{{sample}}_annot.vcf.tsv"
     log:
-        f"{LOGDIR}/{{aligner}}/annotate_vcf/annotate_{{caller}}.log"
+        "{LOGDIR}/{{aligner}}/annotate_vcf/annotate_{{caller}}.log"
     params:
         annotsv = config["annotsv"],
         annotsv_path = config["annotsv_path"]
