@@ -16,13 +16,17 @@ include: "rules/snps.smk"
 
 # Target rules #
 
-rule fast:
+rule structural_variants:
     input:
         expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
         expand(f"{OUTDIR}/minimap2/sniffles_SVs/{{sample}}.vcf",
                sample=config["samples"]),
         expand(f"{OUTDIR}/minimap2/sniffles_annotate/{{sample}}_annot.vcf.tsv",
-               sample=config["samples"]),
+               sample=config["samples"])
+
+rule snps:
+    input:
         expand(f"{OUTDIR}/minimap2/longshot/{{sample}}.merged.vcf.gz",
                sample=config["samples"])
+
