@@ -20,9 +20,9 @@ rule structural_variants:
     input:
         expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/sniffles_SVs/{{sample}}.vcf",
+        expand(f"{OUTDIR}/minimap2/sniffles_calls/{{sample}}.vcf",
                sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/sniffles_annotate/{{sample}}_annot.vcf.tsv",
+        expand(f"{OUTDIR}/minimap2/sniffles_annotated/{{sample}}_annot.vcf.tsv",
                sample=config["samples"])
 
 rule snps:

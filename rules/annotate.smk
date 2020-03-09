@@ -1,8 +1,8 @@
 rule annotate_vcf:
     input:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_SVs/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/{{caller}}_{{stage}}/{{sample}}.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_annotate/{{sample}}_annot.vcf.tsv"
+        f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/{{sample}}_annot.vcf.tsv"
     log:
         f"{LOGDIR}/{{aligner}}/annotate_vcf/annotate_{{caller}}.log"
     params:

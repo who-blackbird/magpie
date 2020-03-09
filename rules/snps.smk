@@ -18,7 +18,7 @@ rule samtools_split:
         samtools index {output.bam}
         """
 
-rule longshot_call_regions:
+rule longshot_call:
     input:
         bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}-{{chromosome}}.bam",
         bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}-{{chromosome}}.bam.bai",
