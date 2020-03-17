@@ -6,14 +6,14 @@ def get_all_samples(wildcards):
 
 rule minimap2_align:
     input:
-        fq = f"{OUTDIR}/fastq/{{sample}}.fastq",
+        fq = f"{OUTDIR}/fastq/{{sample}}.fastq.gz",
         genome = config["genome"]
     output:
         f"{OUTDIR}/minimap2/alignment/{{sample}}.bam"
     threads:
         config["threads"]
     log:
-        f"{LOGDIR}/minimap2/{{sample}}.log"
+        f"{LOGDIR}/minimap2/alignment/{{sample}}.log"
     shell:
         """
         minimap2 --MD -ax map-ont -t {threads} \
@@ -21,23 +21,6 @@ rule minimap2_align:
          {input.genome} {input.fq} | \
          samtools sort -@ {threads} -o {output} - 2> {log}
         """
-
-#rule ngmlr_align:
-    #input:
-        #fq = get_samples,
-        #genome = config["genome"]
-    #output:
-        #protected(f"{OUTDIR}/ngmlr/alignment/{{sample}}.bam")
-    #threads:
-        #config["threads"]
-    #log:
-        #f"{LOGDIR}/ngmlr/{{sample}}.log"
-    #shell:
-        #"""
-        #zcat {input.fq} | \
-        #ngmlr --presets ont -t {threads} -r {input.genome} | \
-        #samtools sort -@ {threads} -o {output} - 2> {log}
-        #"""
 
 rule samtools_index:
     input:

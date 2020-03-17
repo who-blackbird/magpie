@@ -10,9 +10,16 @@ LOGDIR = config["logdir"]
 include: "rules/fqmerge.smk"
 include: "rules/alignment.smk"
 include: "rules/svcalling.smk"
-include: "rules/annotate.smk"
 include: "rules/qc.smk"
 include: "rules/snps.smk"
+
+# Functions #
+
+def getChr():
+    return list(range(1,23)) + ['X', 'Y', 'MT']
+
+#CHROMOSOMES = getChr()
+CHROMOSOMES = [1, 16]
 
 # Target rules #
 
@@ -20,13 +27,10 @@ rule structural_variants:
     input:
         expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/sniffles_calls/{{sample}}.vcf",
-               sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/sniffles_annotated/{{sample}}_annot.vcf.tsv",
-               sample=config["samples"])
+        f"{OUTDIR}/minimap2/sniffles_annotated/genotypes_annot.tsv"
+
 
 rule snps:
     input:
-        expand(f"{OUTDIR}/minimap2/longshot/{{sample}}.merged.vcf.gz",
-               sample=config["samples"])
-
+        expand(f"{OUTDIR}/minimap2/longshot_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
+            chromosome=CHROMOSOMES)

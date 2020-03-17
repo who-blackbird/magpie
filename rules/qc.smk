@@ -3,7 +3,7 @@ rule alignment_qc:
         bam = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam",
         bai = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam.bai"
     output:
-        cov = f"{OUTDIR}/{{aligner}}/coverage/{{sample}}.cov",
+        cov = temp(f"{OUTDIR}/{{aligner}}/coverage/{{sample}}.cov"),
         stats = f"{OUTDIR}/{{aligner}}/coverage/{{sample}}.stats"
     params:
         os.path.join(workflow.basedir, "scripts/coverageStats.py")

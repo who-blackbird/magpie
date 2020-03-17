@@ -1,7 +1,4 @@
-def getChr():
-    return list(range(1,23)) + ['X', 'Y', 'MT']
-
-CHROMOSOMES = getChr()
+SAMPLES = config["samples"].keys()
 
 rule samtools_split:
     input:
@@ -47,15 +44,33 @@ rule bgzip_and_tabix:
         tabix -p vcf {output.vcf}
         """
 
-rule cat_vcfs:
+rule merge_vcfs:
     input:
-        vcf = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{chromosome}.snps.vcf.gz" for chromosome in CHROMOSOMES],
-        idx = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{chromosome}.snps.vcf.gz.tbi" for chromosome in CHROMOSOMES]
+        vcf = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}-{{chromosome}}.snps.vcf.gz" for sample in SAMPLES],
+        idx = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}-{{chromosome}}.snps.vcf.gz.tbi" for sample in SAMPLES]
     output:
-        f"{OUTDIR}/{{aligner}}/{{caller}}/{{sample}}.merged.vcf.gz"
+        vcf = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz"),
+        idx = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi")
     log:
-        f"{LOGDIR}/{{aligner}}/{{caller}}/bcftools-concat/{{sample}}.merged.log"
+       f"{LOGDIR}/{{aligner}}/{{caller}}_merge/all-{{chromosome}}.log"
     shell:
         """
-        bcftools concat {input.vcf} -O z -o {output}
+        bcftools merge --force-samples {input.vcf} -O z -o {output.vcf}
+        tabix -p vcf {output.vcf}
+        """
+
+rule vep:
+    input:
+        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
+    output:
+        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
+        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
+    params:
+        os.path.join(workflow.basedir, "scripts/vep_annotation.sh")
+    log:
+        f"{LOGDIR}/{{aligner}}/{{caller}}_annotation/all-{{chromosome}}.annot.log"
+    shell:
+        """
+        {params} {input.vcf} {output.vcf}
         """

@@ -8,8 +8,8 @@ rule fq_merge:
     input:
         get_samples
     output:
-        f"{OUTDIR}/fastq/{{sample}}.fastq"
+        f"{OUTDIR}/fastq/{{sample}}.fastq.gz"
     shell:
         """
-        cat {input} | xargs cat > {output}
+        cat {input} | xargs cat | gzip > {output}
         """
