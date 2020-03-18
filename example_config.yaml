@@ -10,6 +10,9 @@ samples:
 sniffles_se:
     5
 
+survivor_distance:
+    500
+
 threads:
     8
 
@@ -24,14 +27,3 @@ annotsv:
 
 annotsv_path:
     /path/to/AnnotSV_{version}
-
-snp_anno_refs:
-    cadd_snps: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources/CADD/GRCh38/v1.5/whole_genome_SNVs.tsv.gz
-    cadd_indels: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources/CADD/GRCh38/v1.5/InDels.tsv.gz
-    exac_pli: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources/gnomad/gnomad.v2.1.1.lof_metrics.by_transcript_forVEP.txt
-    revelplug: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources/REVEL/grch38/new_tabbed_revel.sorted.tsv.gz
-    gnomad38r3: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources//gnomad/GRCh38/r3.0/byChr/gnomad.genomes.r3.0.sites.chr10.vcf.bgz
-    gnomad38r2g: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources//gnomad/GRCh38/r2.1.1/byChr/gnomad.genomes.r2.1.sites.grch38.chr10_noVEP.vcf.gz
-    gnomad38r2e: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources//gnomad/GRCh38/r2.1.1/byChr/gnomad.exomes.r2.1.sites.grch38.chr10_noVEP.vcf.gz
-    topmed: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources//topmed/GRC38/freeze5/bravo-dbsnp-all_noChr.vcf.gz
-    clinvar: /rds/project/flr24/rds-flr24-wgs10k-ngc/WGS10K/data/NGC/us/resources//clinvar/hg38/20191202/clinvar_20191202.vcf.gz

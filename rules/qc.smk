@@ -6,7 +6,7 @@ rule alignment_qc:
         cov = temp(f"{OUTDIR}/{{aligner}}/coverage/{{sample}}.cov"),
         stats = f"{OUTDIR}/{{aligner}}/coverage/{{sample}}.stats"
     params:
-        os.path.join(workflow.basedir, "scripts/coverageStats.py")
+        os.path.join(workflow.basedir, "scripts/coverage_stats.py")
     log:
         f"{LOGDIR}/{{aligner}}/coverage/{{sample}}.log"
     shell:
