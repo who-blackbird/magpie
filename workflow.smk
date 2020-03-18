@@ -2,7 +2,7 @@ import os
 import gzip
 import sys
 
-configfile: "config.yaml"
+#configfile: "config.yaml"
 
 OUTDIR = config["outdir"]
 LOGDIR = config["logdir"]
@@ -18,8 +18,7 @@ include: "rules/snps.smk"
 def getChr():
     return list(range(1,23)) + ['X', 'Y', 'MT']
 
-#CHROMOSOMES = getChr()
-CHROMOSOMES = [1, 16]
+CHROMOSOMES = getChr()
 
 # Target rules #
 
