@@ -5,7 +5,7 @@ rule sniffles_call:
         bam = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam",
         bai = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam.bai"
     output:
-        temp(f"{OUTDIR}/{{aligner}}/sniffles_calls/{{sample}}.vcf")
+        f"{OUTDIR}/{{aligner}}/sniffles_calls/{{sample}}.vcf"
     params:
         se = config["sniffles_se"],
     threads: 
@@ -16,6 +16,7 @@ rule sniffles_call:
         """
         sniffles -s {params.se} --mapped_reads {input.bam} --vcf {output} --threads {threads} 2> {log}
         """
+
 rule survivor:
     input:
         [f"{OUTDIR}/{{aligner}}/{{caller}}_{{stage}}/{sample}.vcf" for sample in SAMPLES]
@@ -35,8 +36,8 @@ rule survivor:
         """
         ls {input} > {output.fofn} ; \
         SURVIVOR merge {output.fofn} {params.distance} {params.caller_support} \
-        {params.same_type} {params.same_strand} {params.estimate_distance}  \
-        {params.minimum_size} {output.vcf} 2> {log}
+            {params.same_type} {params.same_strand} {params.estimate_distance}  \
+            {params.minimum_size} {output.vcf} 2> {log}
         """
 
 rule sniffles_genotype:
@@ -52,11 +53,11 @@ rule sniffles_genotype:
     shell:
         """
         sniffles --mapped_reads {input.bam} \
-                 --vcf {output} \
-                 --threads {threads} \
-                 --report_seq \
-                 --cluster \
-                 --Ivcf {input.ivcf} 2> {log}
+            --vcf {output} \
+            --threads {threads} \
+            --report_seq \
+            --cluster \
+            --Ivcf {input.ivcf} 2> {log}
         """
 
 rule annotate_vcf:
