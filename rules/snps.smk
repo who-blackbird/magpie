@@ -67,10 +67,10 @@ rule vep:
         vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
         idx = f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
     params:
-        os.path.join(workflow.basedir, "scripts/vep_annotation.sh")
+        os.path.join(workflow.basedir, "scripts/vep_annotation.sh"),
     log:
         f"{LOGDIR}/{{aligner}}/{{caller}}_annotation/all-{{chromosome}}.annot.log"
     shell:
         """
-        {params} {input.vcf} {output.vcf}
+        {params} {input.vcf} {output.vcf} {wildcards.chromosome}
         """
