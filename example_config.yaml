@@ -22,8 +22,8 @@ genome:
 regions:
     /path/to/regions.bed
 
-annotsv:
-    /path/to/AnnotSV.tcl
+vcfanno_lua:
+    /path/to/custom_ro_min.lua
 
-annotsv_path:
-    /path/to/AnnotSV_{version}
+vcfanno_conf:
+    /path/to/vcfanno_conf.toml

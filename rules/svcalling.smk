@@ -68,15 +68,11 @@ rule annotate_vcf:
     log:
         f"{LOGDIR}/{{aligner}}/annotate_vcf/annotate_{{caller}}.log"
     params:
-        annotsv = config["annotsv"],
-        annotsv_path = config["annotsv_path"]
+        lua = config["vcfanno_lua"]
+        conf = config["vcfanno_conf"]
+    threads:
+        config["threads"]
     shell:
         """
-        export ANNOTSV={params.annotsv_path}; \
-        {params.annotsv} -SVinputFile {input} \
-            -genomeBuild GRCh38 \
-            -typeOfAnnotation full \
-            -overlap 70 \
-            -reciprocal yes \
-            -outputFile {output}
+        vcfanno -ends -permissive-overlap -p {threads} {params.lua} {params.conf} {input} > {output} 2> {log}
         """
