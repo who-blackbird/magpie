@@ -18,7 +18,8 @@ include: "rules/snps.smk"
 def getChr():
     return list(range(1,23)) + ['X', 'Y', 'MT']
 
-CHROMOSOMES = getChr()
+#CHROMOSOMES = getChr()
+CHROMOSOMES = ['1', '4']
 
 # Target rules #
 
@@ -26,7 +27,7 @@ rule structural_variants:
     input:
         expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        f"{OUTDIR}/minimap2/sniffles_annotated/genotypes_annot.tsv"
+        f"{OUTDIR}/minimap2/sniffles_annotated/genotypes_annot.vcf.gz"
 
 
 rule snps:

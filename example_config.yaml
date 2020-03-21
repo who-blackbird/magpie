@@ -5,7 +5,8 @@ logdir:
     /path/to/log
 
 samples:
-    SAMPLE: /path/to/fastq.fof
+    SAMPLE1: /path/to/SAMPLE1.fq.fof
+    SAMPLE2: /path/to/SAMPLE2.fq.fof
 
 sniffles_se:
     5
@@ -21,9 +22,6 @@ genome:
 
 regions:
     /path/to/regions.bed
-
-vcfanno_lua:
-    /path/to/custom_ro_min.lua
 
 vcfanno_conf:
     /path/to/vcfanno_conf.toml

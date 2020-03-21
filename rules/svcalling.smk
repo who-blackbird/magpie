@@ -64,15 +64,14 @@ rule annotate_vcf:
     input:
         f"{OUTDIR}/{{aligner}}/{{caller}}_combined/genotypes.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/genotypes_annot.tsv"
+        f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/genotypes_annot.vcf.gz"
     log:
         f"{LOGDIR}/{{aligner}}/annotate_vcf/annotate_{{caller}}.log"
     params:
-        lua = config["vcfanno_lua"]
         conf = config["vcfanno_conf"]
     threads:
         config["threads"]
     shell:
         """
-        vcfanno -ends -permissive-overlap -p {threads} {params.lua} {params.conf} {input} > {output} 2> {log}
+        vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} | bgzip -c > {output} 2> {log}
         """
