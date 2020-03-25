@@ -11,10 +11,11 @@ rule sniffles_call:
     threads: 
         config["threads"]
     log:
-        f"{LOGDIR}/{{aligner}}/sniffles_calls/{{sample}}.log"
+        out = f"{LOGDIR}/{{aligner}}/sniffles_calls/{{sample}}.out",
+        err = f"{LOGDIR}/{{aligner}}/sniffles_calls/{{sample}}.err"
     shell:
         """
-        sniffles -s {params.se} --mapped_reads {input.bam} --vcf {output} --threads {threads} 2> {log}
+        sniffles -s {params.se} --mapped_reads {input.bam} --vcf {output} --threads {threads} 1> {log.out} 2> {log.err}
         """
 
 rule survivor:
@@ -31,13 +32,14 @@ rule survivor:
         estimate_distance = -1,
         minimum_size = -1,
     log:
-        f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.log"
+        out = f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.out",
+        err = f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.err"
     shell:
         """
         ls {input} > {output.fofn} ; \
         SURVIVOR merge {output.fofn} {params.distance} {params.caller_support} \
             {params.same_type} {params.same_strand} {params.estimate_distance}  \
-            {params.minimum_size} {output.vcf} 2> {log}
+            {params.minimum_size} {output.vcf} 1> {log.out} 2> {log.err}
         """
 
 rule sniffles_genotype:
@@ -49,7 +51,8 @@ rule sniffles_genotype:
     threads: 
         config["threads"]
     log:
-        f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.log"
+        out = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.out",
+        err = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.err"
     shell:
         """
         sniffles --mapped_reads {input.bam} \
@@ -57,7 +60,7 @@ rule sniffles_genotype:
             --threads {threads} \
             --report_seq \
             --cluster \
-            --Ivcf {input.ivcf} 2> {log}
+            --Ivcf {input.ivcf} 1> {log.out} 2> {log.err}
         """
 
 rule annotate_vcf:
@@ -66,12 +69,13 @@ rule annotate_vcf:
     output:
         f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/genotypes_annot.vcf.gz"
     log:
-        f"{LOGDIR}/{{aligner}}/annotate_vcf/annotate_{{caller}}.log"
+        err = f"{LOGDIR}/{{aligner}}/annotate_vcf/annotate_{{caller}}.err"
     params:
-        conf = config["vcfanno_conf"]
+        conf = config["vcfanno_conf_svs"]
     threads:
         config["threads"]
     shell:
         """
-        vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} | bgzip -c > {output} 2> {log}
+        vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} | \
+        bgzip -c > {output} 2> {log.err}
         """

@@ -18,8 +18,8 @@ include: "rules/snps.smk"
 def getChr():
     return list(range(1,23)) + ['X', 'Y', 'MT']
 
-#CHROMOSOMES = getChr()
-CHROMOSOMES = ['1', '4']
+CHROMOSOMES = getChr()
+#CHROMOSOMES = ['1', '4']
 
 # Target rules #
 
