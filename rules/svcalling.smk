@@ -2,14 +2,14 @@ SAMPLES = config["samples"].keys()
 
 rule sniffles_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam.bai"
+        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai"
     output:
         f"{OUTDIR}/{{aligner}}/sniffles_calls/{{sample}}.vcf"
     params:
         se = config["sniffles_se"],
     threads: 
-        config["threads"]
+        config["threads"]["per_sample"]
     log:
         out = f"{LOGDIR}/{{aligner}}/sniffles_calls/{{sample}}.out",
         err = f"{LOGDIR}/{{aligner}}/sniffles_calls/{{sample}}.err"
@@ -44,12 +44,12 @@ rule survivor:
 
 rule sniffles_genotype:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam",
+        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
         ivcf = f"{OUTDIR}/{{aligner}}/sniffles_combined/calls.vcf"
     output:
         f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.vcf"
     threads: 
-        config["threads"]
+        config["threads"]["per_sample"]
     log:
         out = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.out",
         err = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.err"
@@ -63,17 +63,17 @@ rule sniffles_genotype:
             --Ivcf {input.ivcf} 1> {log.out} 2> {log.err}
         """
 
-rule annotate_vcf:
+rule annotate_svs:
     input:
         f"{OUTDIR}/{{aligner}}/{{caller}}_combined/genotypes.vcf"
     output:
         f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/genotypes_annot.vcf.gz"
     log:
-        err = f"{LOGDIR}/{{aligner}}/annotate_vcf/annotate_{{caller}}.err"
+        err = f"{LOGDIR}/{{aligner}}/annotate_svs/annotate_{{caller}}.err"
     params:
         conf = config["vcfanno_conf_svs"]
     threads:
-        config["threads"]
+        config["threads"]["all"]
     shell:
         """
         vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} | \
