@@ -10,6 +10,7 @@ LOGDIR = config["logdir"]
 include: "rules/fqmerge.smk"
 include: "rules/alignment.smk"
 include: "rules/svcalling.smk"
+include: "rules/annotate.smk"
 include: "rules/qc.smk"
 include: "rules/snps.smk"
 
@@ -24,17 +25,15 @@ CHROMOSOMES = getChr()
 
 rule fast:
     input:
-        expand("{OUTDIR}/minimap2/coverage/{{sample}}.stats",
+        expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        f"{OUTDIR}/minimap2/sniffles_annotated/genotypes_vcfanno.vcf.gz",
-
+        f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.tab",
 
 rule precise:
     input:
-        #expand("{OUTDIR}/minimap2/coverage/{{sample}}.stats",
+        f"{OUTDIR}/ngmlr/sniffles_annotated/svs_vcfanno.tab",
+         #expand("{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                #sample=config["samples"]),
-        f"{OUTDIR}/ngmlr/sniffles_annotated/genotypes_vcfanno.vcf.gz"
-
 
 rule snps:
     input:
