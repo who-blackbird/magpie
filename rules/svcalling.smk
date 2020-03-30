@@ -8,7 +8,7 @@ rule sniffles_call:
         f"{OUTDIR}/{{aligner}}/sniffles_calls/{{sample}}.vcf"
     params:
         se = config["sniffles_se"],
-    threads: 
+    threads:
         config["threads"]["per_sample"]
     log:
         out = f"{LOGDIR}/{{aligner}}/sniffles_calls/{{sample}}.out",
@@ -48,7 +48,7 @@ rule sniffles_genotype:
         ivcf = f"{OUTDIR}/{{aligner}}/sniffles_combined/calls.vcf"
     output:
         f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.vcf"
-    threads: 
+    threads:
         config["threads"]["per_sample"]
     log:
         out = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.out",
@@ -63,19 +63,14 @@ rule sniffles_genotype:
             --Ivcf {input.ivcf} 1> {log.out} 2> {log.err}
         """
 
-rule annotate_svs:
+rule sniffles_missing2ref:
     input:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_combined/genotypes.vcf"
+        f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/genotypes_annot.vcf.gz"
+        f"{OUTDIR}/{{aligner}}/sniffles_missing2ref/{{sample}}.vcf"
     log:
-        err = f"{LOGDIR}/{{aligner}}/annotate_svs/annotate_{{caller}}.err"
-    params:
-        conf = config["vcfanno_conf_svs"]
-    threads:
-        config["threads"]["all"]
+        f"{LOGDIR}/{{aligner}}/sniffles_missing2ref/{{sample}}.err"
     shell:
         """
-        vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} | \
-        bgzip -c > {output} 2> {log.err}
+        bcftools +missing2ref {input} > {output} 2> {log}
         """
