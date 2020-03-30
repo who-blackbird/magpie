@@ -20,7 +20,7 @@ rule longshot_call:
         bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}-{{chromosome}}.bam",
         bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}-{{chromosome}}.bam.bai",
     output:
-        vcf   = temp(f"{OUTDIR}/{{aligner}}/longshot_split/{{sample}}-{{chromosome}}.snps.vcf"),
+        vcf = temp(f"{OUTDIR}/{{aligner}}/longshot_split/{{sample}}-{{chromosome}}.snps.vcf"),
     log:
         f"{LOGDIR}/{{aligner}}/longshot_split/{{sample}}-{{chromosome}}.snps.log"
     params:
@@ -34,8 +34,8 @@ rule bgzip_and_tabix:
     input:
         f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{{chromosome}}.snps.vcf"
     output:
-        vcf = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{{chromosome}}.snps.vcf.gz"),
-        idx = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{{chromosome}}.snps.vcf.gz.tbi")
+        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{{chromosome}}.snps.vcf.gz.tbi"
     log:
         f"{LOGDIR}/{{aligner}}/{{caller}}_index/{{sample}}-{{chromosome}}.index.log"
     shell:
@@ -49,8 +49,8 @@ rule merge_vcfs:
         vcf = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}-{{chromosome}}.snps.vcf.gz" for sample in SAMPLES],
         idx = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}-{{chromosome}}.snps.vcf.gz.tbi" for sample in SAMPLES]
     output:
-        vcf = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz"),
-        idx = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi")
+        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
     log:
        f"{LOGDIR}/{{aligner}}/{{caller}}_merge/all-{{chromosome}}.log"
     shell:
@@ -59,17 +59,36 @@ rule merge_vcfs:
         tabix -p vcf {output.vcf}
         """
 
+rule vcfanno:
+    input:
+        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
+    output:
+        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_vcfanno_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
+        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_vcfanno_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
+    log:
+        f"{LOGDIR}/{{aligner}}/{{caller}}_{{annot}}annotation/all-{{chromosome}}.annot.log"
+    params:
+        conf = config["vcfanno_conf_snvs"]
+    threads:
+        config["threads"]["per_chr"]
+    shell:
+        """
+        vcfanno -p {threads} {params.conf} {input} | \
+        bgzip -c > {output} 2> {log.err}
+        """
+
 rule vep:
     input:
         vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
         idx = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
     output:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
-        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
+        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
+        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
     params:
         os.path.join(workflow.basedir, "scripts/vep_annotation.sh"),
     log:
-        f"{LOGDIR}/{{aligner}}/{{caller}}_annotation/all-{{chromosome}}.annot.log"
+        f"{LOGDIR}/{{aligner}}/{{caller}}_vep_annotation/all-{{chromosome}}.annot.log"
     shell:
         """
         {params} {input.vcf} {output.vcf} {wildcards.chromosome}
