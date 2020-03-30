@@ -22,10 +22,10 @@ rule vcf2tab:
     log:
         f"{LOGDIR}/{{aligner}}/vcf2tab/vcf2tab_{{caller}}.err"
     params:
-        os.path.join(workflow.basedir, "scripts/vcf2tab.py")
+        script = os.path.join(workflow.basedir, "scripts/vcf2tab.py")
     shell:
         """
-        python {script} {input} > {output}
+        python {params.script} {input} > {output}
         """
 
 # rule annotsv_svs:
