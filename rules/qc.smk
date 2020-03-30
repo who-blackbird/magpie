@@ -8,7 +8,7 @@ rule alignment_qc:
     params:
         os.path.join(workflow.basedir, "scripts/coverage_stats.py")
     log:
-        "{LOGDIR}/{{aligner}}/coverage/{{sample}}.log"
+        f"{LOGDIR}/{{aligner}}/coverage/{{sample}}.log"
     shell:
         "samtools depth {input.bam} > {output.cov} 2> {log}; \
          python {params} {output.cov} > {output.stats}"
