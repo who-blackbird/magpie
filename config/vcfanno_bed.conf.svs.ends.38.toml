@@ -1,0 +1,6 @@
+#REPEATMASKER
+[[annotation]]
+file="/rds/project/who1000/rds-who1000-wgs10k/WGS10K/data/projects/nanopore/us/resources/software/vcfanno/GRCh38/repeatmasker.hg38.ref.gz"
+names=["rmk_s","rmk_e","rmk_id"]
+columns=[2,3,4]
+ops=["self","self","self"]
