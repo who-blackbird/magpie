@@ -26,8 +26,8 @@ rule structural_variants:
     input:
         expand("{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        f"{OUTDIR}/minimap2/sniffles_annotated/genotypes_annot.vcf.gz",
-        f"{OUTDIR}/ngmlr/sniffles_annotated/genotypes_annot.vcf.gz"
+        f"{OUTDIR}/minimap2/sniffles_annotated/genotypes_vcfanno.vcf.gz",
+        f"{OUTDIR}/ngmlr/sniffles_annotated/genotypes_vcfanno.vcf.gz"
 
 
 rule snps:
@@ -36,4 +36,3 @@ rule snps:
             sample=config["samples"], chromosome=CHROMOSOMES)
         #expand(f"{OUTDIR}/minimap2/longshot_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
             #chromosome=CHROMOSOMES)
-
