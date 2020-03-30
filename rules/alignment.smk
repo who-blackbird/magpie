@@ -58,7 +58,7 @@ rule samtools_index:
     output:
         f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai"
     log:
-        f"{LOGDIR}/{{aligner}}/samtools_index/{{sample}}.log"
+        "{LOGDIR}/{{aligner}}/samtools_index/{{sample}}.log"
     shell:
         """
         samtools index {input} 2> {log}
