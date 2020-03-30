@@ -4,18 +4,17 @@ outdir:
 logdir:
     /path/to/log
 
-samples:
-    SAMPLE1: /path/to/SAMPLE1.fq.fof
-    SAMPLE2: /path/to/SAMPLE2.fq.fof
-
 sniffles_se:
     5
 
 survivor_distance:
     500
 
+#For 10 nodes= 320cpu
 threads:
-    8
+    per_sample: 10 #320/62
+    per_chr: 12 #320/25
+    all: 320
 
 genome:
     /path/to/ref
@@ -23,5 +22,12 @@ genome:
 regions:
     /path/to/regions.bed
 
-vcfanno_conf:
-    /path/to/vcfanno_conf.toml
+vcfanno_conf_svs:
+    /path/to/vcfanno_bed.conf.svs.38.toml
+
+vcfanno_conf_snvs:
+    /path/to/vcfanno_bed.conf.snvs.38.toml
+
+samples:
+    SAMPLE1: /path/to/SAMPLE1.fq.fof
+    SAMPLE2: /path/to/SAMPLE2.fq.fof
