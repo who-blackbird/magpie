@@ -22,11 +22,17 @@ CHROMOSOMES = getChr()
 
 # Target rules #
 
-rule structural_variants:
+rule fast:
     input:
         expand("{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
         f"{OUTDIR}/minimap2/sniffles_annotated/genotypes_vcfanno.vcf.gz",
+
+
+rule precise:
+    input:
+        #expand("{OUTDIR}/minimap2/coverage/{{sample}}.stats",
+               #sample=config["samples"]),
         f"{OUTDIR}/ngmlr/sniffles_annotated/genotypes_vcfanno.vcf.gz"
 
 
