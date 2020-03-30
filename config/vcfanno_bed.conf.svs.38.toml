@@ -48,7 +48,7 @@ ops=["self","self","self"]
 
 #NGCLOV
 [[annotation]]
-file="/rds/project/who1000/rds-who1000-wgs10k/WGS10K/data/projects/nanopore/us/resources/software/vcfanno/GRCh38/NGC_mergedSVs_survivor_1000.0based.b37.liftover38.bed.gz"
+file="/rds/project/who1000/rds-who1000-wgs10k/WGS10K/data/projects/nanopore/us/resources/software/vcfanno/GRCh38/NGC_mergedSVs_survivor_1000.0based.b37.liftover.bed.gz"
 names=["ngclov_s","ngclov_e","ngclov_ov_id"]
 columns=[2,3,4]
 ops=["self","self","self"]
@@ -56,7 +56,7 @@ ops=["self","self","self"]
 
 #WGS13K
 [[annotation]]
-file="/rds/project/who1000/rds-who1000-wgs10k/WGS10K/data/projects/nanopore/us/resources/software/vcfanno/GRCh38/WGS13K_mergedSVs_survivor_1000.0based.b37.liftover38.bed.gz"
+file="/rds/project/who1000/rds-who1000-wgs10k/WGS10K/data/projects/nanopore/us/resources/software/vcfanno/GRCh38/WGS13K_mergedSVs_survivor_1000.0based.b37.liftover.bed.gz"
 names=["wgs13k_s","wgs13k_e","wgs13k_id"]
 columns=[2,3,4]
 ops=["self","self","self"]
