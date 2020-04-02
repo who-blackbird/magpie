@@ -25,12 +25,12 @@ rule survivor:
         vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_combined/{{stage}}.vcf",
         fofn = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_{{stage}}/samples.fofn")
     params:
-        distance = config["survivor_distance"],
-        caller_support = 1,
-        same_type = 1,
-        same_strand = -1,
-        estimate_distance = -1,
-        minimum_size = -1,
+        distance = config["survivor"]["distance"],
+        caller_support = config["survivor"]["caller_support"],
+        same_type = config["survivor"]["same_type"],
+        same_strand = config["survivor"]["same_strand"],
+        estimate_distance = config["survivor"]["estimate_distance"],
+        minimum_size = config["survivor"]["minimum_size"],
     log:
         out = f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.out",
         err = f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.err"
@@ -63,13 +63,65 @@ rule sniffles_genotype:
             --Ivcf {input.ivcf} 1> {log.out} 2> {log.err}
         """
 
-rule sniffles_missing2ref:
+rule nanosv_call:
     input:
-        f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.vcf"
+        bam = temp(f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam"),
+        bai = temp(f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai")
     output:
-        f"{OUTDIR}/{{aligner}}/sniffles_missing2ref/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/nanosv_genotypes/{{sample}}/{{sample}}-{{chromosome}}.vcf"
+    threads:
+        2
+    params:
+        bed = config["annotbed"]
     log:
-        f"{LOGDIR}/{{aligner}}/sniffles_missing2ref/{{sample}}.err"
+        out = f"{LOGDIR}/{{aligner}}/nanosv_genotypes/{{sample}}.out",
+        err = f"{LOGDIR}/{{aligner}}/nanosv_genotypes/{{sample}}.err"
+    shell:
+        """
+       NanoSV -s sambamba {input.bam} \
+              -t {threads} \ 
+              -b {params.bed} \
+              -o {output} 2> {log}
+        """
+
+rule svim_call:
+    input:
+        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai",
+        genome = config["genome"]
+    output:
+        # f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
+        f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}"
+    threads:
+        config["threads"]["per_sample"]
+    log:
+        f"{OUTDIR}/{{aligner}}/svim_call/{{sample}}.log"
+    shell:
+        """
+        svim alignment --sample {wildcards.sample} \
+        {output}/ {input.bam} {input.genome} 2> {log}
+        """
+
+rule filter_svim:
+    input:
+        f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
+    output:
+        f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample,[A-Za-z0-9]+}}.vcf"
+    log:
+        f"{LOGDIR}/{{aligner}}/svim_call/{{sample}}.filter.log"
+    shell:
+        "cat {input} | \
+         awk '{{ if($1 ~ /^#/) {{ print $0 }} \
+         else {{ if($6>40) {{ print $0 }} }} }}' > {output}"
+
+
+rule missing2ref:
+    input:
+        f"{OUTDIR}/{{aligner}}/{{caller}}_genotypes/{{sample}}.vcf"
+    output:
+        f"{OUTDIR}/{{aligner}}/{{caller}}_missing2ref/{{sample}}.vcf"
+    log:
+        f"{LOGDIR}/{{aligner}}/{{caller}}_missing2ref/{{sample}}.err"
     shell:
         """
         bcftools +missing2ref {input} > {output} 2> {log}
