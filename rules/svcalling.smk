@@ -90,16 +90,17 @@ rule svim_call:
         bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai",
         genome = config["genome"]
     output:
-        # f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
-        f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}"
+        f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
     threads:
         config["threads"]["per_sample"]
+    params:
+        outdir=f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}"
     log:
         f"{OUTDIR}/{{aligner}}/svim_call/{{sample}}.log"
     shell:
         """
         svim alignment --sample {wildcards.sample} \
-        {output}/ {input.bam} {input.genome} 2> {log}
+        {params.outdir}/ {input.bam} {input.genome} 2> {log}
         """
 
 rule filter_svim:
