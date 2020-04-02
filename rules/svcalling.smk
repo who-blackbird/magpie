@@ -65,8 +65,8 @@ rule sniffles_genotype:
 
 rule nanosv_call:
     input:
-        bam = temp(f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam"),
-        bai = temp(f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai")
+        bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai"
     output:
         f"{OUTDIR}/{{aligner}}/nanosv_genotypes/{{sample}}/{{sample}}-{{chromosome}}.vcf"
     threads:
@@ -78,10 +78,10 @@ rule nanosv_call:
         err = f"{LOGDIR}/{{aligner}}/nanosv_genotypes/{{sample}}.err"
     shell:
         """
-       NanoSV -s sambamba {input.bam} \
+       NanoSV -s sambamba \
               -t {threads} \ 
               -b {params.bed} \
-              -o {output} 2> {log}
+              -o {output} {input.bam} 2> {log} 
         """
 
 rule svim_call:
@@ -110,9 +110,11 @@ rule filter_svim:
     log:
         f"{LOGDIR}/{{aligner}}/svim_call/{{sample}}.filter.log"
     shell:
-        "cat {input} | \
-         awk '{{ if($1 ~ /^#/) {{ print $0 }} \
-         else {{ if($6>40) {{ print $0 }} }} }}' > {output}"
+        """
+        cat {input} | \
+        awk '{{ if($1 ~ /^#/) {{ print $0 }} \
+        else {{ if($6>40) {{ print $0 }} }} }}' > {output}
+        """
 
 
 rule missing2ref:
