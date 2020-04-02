@@ -7,8 +7,16 @@ logdir:
 sniffles_se:
     5
 
-survivor_distance:
-    500
+survivor:
+    distance: 500
+    caller_support: 1
+    same_type: 1
+    same_strand: -1
+    estimate_distance: -1
+    minimum_size: -1
+
+annotbed:
+    /path/to/bed
 
 #For 10 nodes= 320cpu
 threads:
