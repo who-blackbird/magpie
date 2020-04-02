@@ -2,13 +2,13 @@ SAMPLES = config["samples"].keys()
 
 rule samtools_split:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment/{{sample}}.bam.bai",
+        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai",
     output:
-        bam = temp(f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}-{{chromosome}}.bam"),
-        bai = temp(f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}-{{chromosome}}.bam.bai")
+        bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai"
     log:
-        f"{LOGDIR}/{{aligner}}/samtools_split/{{sample}}-{{chromosome}}.log"
+        f"{LOGDIR}/{{aligner}}/samtools_split/{{sample}}/{{sample}}-{{chromosome}}.log"
     shell:
         """
         samtools view -h {input.bam} {wildcards.chromosome} -o {output.bam} 2> {log}
@@ -17,12 +17,12 @@ rule samtools_split:
 
 rule longshot_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}-{{chromosome}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}-{{chromosome}}.bam.bai",
+        bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai",
     output:
-        vcf = temp(f"{OUTDIR}/{{aligner}}/longshot_split/{{sample}}-{{chromosome}}.snps.vcf"),
+        vcf = temp(f"{OUTDIR}/{{aligner}}/longshot_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf"),
     log:
-        f"{LOGDIR}/{{aligner}}/longshot_split/{{sample}}-{{chromosome}}.snps.log"
+        f"{LOGDIR}/{{aligner}}/longshot_split/{{sample}}/{{sample}}-{{chromosome}}.snps.log"
     params:
         genome = config["genome"]
     shell:
@@ -32,12 +32,12 @@ rule longshot_call:
 
 rule bgzip_and_tabix:
     input:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{{chromosome}}.snps.vcf"
+        f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf"
     output:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{{chromosome}}.snps.vcf.gz",
-        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}-{{chromosome}}.snps.vcf.gz.tbi"
+        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf.gz.tbi"
     log:
-        f"{LOGDIR}/{{aligner}}/{{caller}}_index/{{sample}}-{{chromosome}}.index.log"
+        f"{LOGDIR}/{{aligner}}/{{caller}}_index/{{sample}}/{{sample}}-{{chromosome}}.index.log"
     shell:
         """
         bgzip -c {input} > {output.vcf}
@@ -46,8 +46,8 @@ rule bgzip_and_tabix:
 
 rule merge_vcfs:
     input:
-        vcf = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}-{{chromosome}}.snps.vcf.gz" for sample in SAMPLES],
-        idx = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}-{{chromosome}}.snps.vcf.gz.tbi" for sample in SAMPLES]
+        vcf = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}/{sample}-{{chromosome}}.snps.vcf.gz" for sample in SAMPLES],
+        idx = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}/{sample}-{{chromosome}}.snps.vcf.gz.tbi" for sample in SAMPLES]
     output:
         vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
         idx = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
