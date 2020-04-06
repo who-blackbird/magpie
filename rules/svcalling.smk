@@ -91,12 +91,10 @@ rule svim_call:
         genome = config["genome"]
     output:
         f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
-    threads:
-        config["threads"]["per_sample"]
     params:
         outdir=f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}"
     log:
-        f"{OUTDIR}/{{aligner}}/svim_call/{{sample}}.log"
+        f"{LOGDIR}/{{aligner}}/svim_calls/{{sample}}.log"
     shell:
         """
         svim alignment --sample {wildcards.sample} \
@@ -107,16 +105,17 @@ rule filter_svim:
     input:
         f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample,[A-Za-z0-9]+}}.vcf"
+        f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample}}/{{sample}}.vcf"
+        # f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample}}/{{sample,[A-Za-z0-9]+}}.vcf"
+        # f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample}}/{{sample}}.vcf"
     log:
-        f"{LOGDIR}/{{aligner}}/svim_call/{{sample}}.filter.log"
+        f"{LOGDIR}/{{aligner}}/svim_genotype/{{sample}}.filter.log"
     shell:
         """
         cat {input} | \
         awk '{{ if($1 ~ /^#/) {{ print $0 }} \
-        else {{ if($6>40) {{ print $0 }} }} }}' > {output}
+        else {{ if($6>10) {{ print $0 }} }} }}' > {output}
         """
-
 
 rule missing2ref:
     input:
