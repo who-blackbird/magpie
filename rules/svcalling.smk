@@ -5,7 +5,7 @@ rule sniffles_call:
         bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
         bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai"
     output:
-        f"{OUTDIR}/{{aligner}}/sniffles_calls/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/sniffles_calls/{{sample}}/{{sample}}.vcf"
     params:
         se = config["sniffles_se"],
     threads:
@@ -20,7 +20,7 @@ rule sniffles_call:
 
 rule survivor:
     input:
-        [f"{OUTDIR}/{{aligner}}/{{caller}}_{{stage}}/{sample}.vcf" for sample in SAMPLES]
+        [f"{OUTDIR}/{{aligner}}/{{caller}}_{{stage}}/{sample}/{sample}.vcf" for sample in SAMPLES]
     output:
         vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_combined/{{stage}}.vcf",
         fofn = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_{{stage}}/samples.fofn")
@@ -47,7 +47,7 @@ rule sniffles_genotype:
         bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
         ivcf = f"{OUTDIR}/{{aligner}}/sniffles_combined/calls.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}/{{sample}}.vcf"
     threads:
         config["threads"]["per_sample"]
     log:
@@ -70,7 +70,7 @@ rule nanosv_call:
     output:
         f"{OUTDIR}/{{aligner}}/nanosv_genotypes/{{sample}}/{{sample}}-{{chromosome}}.vcf"
     threads:
-        2
+        1
     params:
         bed = config["annotbed"]
     log:
@@ -106,8 +106,6 @@ rule filter_svim:
         f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
     output:
         f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample}}/{{sample}}.vcf"
-        # f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample}}/{{sample,[A-Za-z0-9]+}}.vcf"
-        # f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample}}/{{sample}}.vcf"
     log:
         f"{LOGDIR}/{{aligner}}/svim_genotype/{{sample}}.filter.log"
     shell:
@@ -117,14 +115,15 @@ rule filter_svim:
         else {{ if($6>10) {{ print $0 }} }} }}' > {output}
         """
 
-rule missing2ref:
+rule vcf_ref:
     input:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_genotypes/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/{{caller}}_genotypes/{{sample}}/{{sample}}.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_missing2ref/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/{{caller}}_reformatted/{{sample}}/{{sample}}.vcf"
     log:
-        f"{LOGDIR}/{{aligner}}/{{caller}}_missing2ref/{{sample}}.err"
+        f"{LOGDIR}/{{aligner}}/{{caller}}_reformatted/{{sample}}.err"
     shell:
         """
-        bcftools +missing2ref {input} > {output} 2> {log}
+        bcftools reheader -s <(echo {wildcards.sample}) {input} | \
+        bcftools +missing2ref - > {output} 2> {log}
         """
