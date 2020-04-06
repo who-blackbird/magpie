@@ -27,16 +27,16 @@ rule fast:
     input:
         expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.tab",
+        f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.ovl.tab",
 
 rule precise:
     input:
         expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.tab",
+        f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.ovl.tab",
         expand(f"{OUTDIR}/minimap2/nanosv_genotypes/{{sample}}/{{sample}}-{{chromosome}}.vcf",
                 sample=config["samples"], chromosome=CHROMOSOMES),
-        expand(f"{OUTDIR}/minimap2/svim_genotypes/{{sample}}/{{sample}}.vcf",
+        expand(f"{OUTDIR}/minimap2/svim_reformatted/{{sample}}/{{sample}}.vcf",
                 sample=config["samples"]),
 
 rule snps:
