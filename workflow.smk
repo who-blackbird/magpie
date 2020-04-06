@@ -36,7 +36,7 @@ rule precise:
         f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.tab",
         expand(f"{OUTDIR}/minimap2/nanosv_genotypes/{{sample}}/{{sample}}-{{chromosome}}.vcf",
                 sample=config["samples"], chromosome=CHROMOSOMES),
-        expand(f"{OUTDIR}/minimap2/svim_genotypes/{{sample}}.vcf",
+        expand(f"{OUTDIR}/minimap2/svim_genotypes/{{sample}}/{{sample}}.vcf",
                 sample=config["samples"]),
 
 rule snps:
