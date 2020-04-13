@@ -34,7 +34,7 @@ rule precise:
         expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
                sample=config["samples"]),
         f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.ovl.tab",
-        expand(f"{OUTDIR}/minimap2/nanosv_genotypes/{{sample}}/{{sample}}-{{chromosome}}.vcf",
+        expand(f"{OUTDIR}/minimap2/nanosv_genotypes_split/{{sample}}/{{sample}}-{{chromosome}}.vcf",
                 sample=config["samples"], chromosome=CHROMOSOMES),
         expand(f"{OUTDIR}/minimap2/svim_reformatted/{{sample}}/{{sample}}.vcf",
                 sample=config["samples"]),
@@ -43,5 +43,7 @@ rule snps:
     input:
         expand(f"{OUTDIR}/minimap2/longshot_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf.gz",
             sample=config["samples"], chromosome=CHROMOSOMES)
+        #expand(f"{OUTDIR}/minimap2/longshot_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf",
+            # sample=config["samples"], chromosome=CHROMOSOMES)
         #expand(f"{OUTDIR}/minimap2/longshot_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
             #chromosome=CHROMOSOMES)
