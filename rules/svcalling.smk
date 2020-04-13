@@ -68,20 +68,20 @@ rule nanosv_call:
         bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
         bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai"
     output:
-        f"{OUTDIR}/{{aligner}}/nanosv_genotypes/{{sample}}/{{sample}}-{{chromosome}}.vcf"
+        f"{OUTDIR}/{{aligner}}/nanosv_genotypes_split/{{sample}}/{{sample}}-{{chromosome}}.vcf"
     threads:
         1
     params:
-        bed = config["annotbed"]
+        bed = config["annotbed"],
+        sambamba = config["sambamba_path"]
     log:
-        out = f"{LOGDIR}/{{aligner}}/nanosv_genotypes/{{sample}}.out",
-        err = f"{LOGDIR}/{{aligner}}/nanosv_genotypes/{{sample}}.err"
+        f"{LOGDIR}/{{aligner}}/nanosv_genotypes_split/{{sample}}-{{chromosome}}.log"
     shell:
         """
-       NanoSV -s sambamba \
-              -t {threads} \ 
-              -b {params.bed} \
-              -o {output} {input.bam} 2> {log} 
+        NanoSV -s {params.sambamba} \
+        -t {threads} \
+        -b {params.bed} \
+        -o {output} {input.bam} 2> {log} 
         """
 
 rule svim_call:
