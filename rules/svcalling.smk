@@ -1,5 +1,10 @@
 SAMPLES = config["samples"].keys()
 
+def getChr():
+    return list(range(1,23)) + ['X', 'Y', 'MT']
+
+CHROMOSOMES = getChr()
+
 rule sniffles_call:
     input:
         bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
@@ -84,6 +89,21 @@ rule nanosv_call:
         -o {output} {input.bam} 2> {log} 
         """
 
+rule cat_vcfs:
+    input:
+        [f"{OUTDIR}/{{aligner}}/{{caller}}_genotypes_split/{{sample}}/{{sample}}-{chromosome}.vcf" for chromosome in CHROMOSOMES]
+    output:
+        unsorted = temp(f"{OUTDIR}/{{aligner}}/{{caller}}_genotypes/{{sample}}/{{sample}}.unsorted.vcf"),
+        sorted = f"{OUTDIR}/{{aligner}}/{{caller}}_genotypes/{{sample}}/{{sample}}.vcf"
+    log:
+        concat = f"{LOGDIR}/{{aligner}}/{{caller}}_concat/{{sample}}.log",
+        sort = f"{LOGDIR}/{{aligner}}/{{caller}}_sort/{{sample}}.log"
+    shell:
+        """
+        bcftools concat {input} -o {output.unsorted} 2> {log.concat}; \
+        bcftools sort {output.unsorted} -o {output.sorted} 2 > {log.sort}
+        """
+
 rule svim_call:
     input:
         bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
@@ -127,3 +147,27 @@ rule vcf_ref:
         bcftools reheader -s <(echo {wildcards.sample}) {input} | \
         bcftools +missing2ref - > {output} 2> {log}
         """
+
+rule survivor_all:
+    input:
+        [f"{OUTDIR}/{{aligner}}/{caller}_genotypes/{sample}/{sample}.vcf"
+               for sample in config["samples"]
+               for caller in ["sniffles", "svim", "nanosv"]]
+    output:
+        vcf = f"{OUTDIR}/{{aligner}}/all_combined/genotypes.vcf",
+        fofn = f"{OUTDIR}/{{aligner}}/all_combined/samples.fofn"
+    params:
+        svs_short = config["svs_short_fof"],
+        distance = config["survivor"]["distance"],
+        caller_support = config["survivor"]["caller_support"],
+        same_type = config["survivor"]["same_type"],
+        same_strand = config["survivor"]["same_strand"],
+        estimate_distance = config["survivor"]["estimate_distance"],
+        minimum_size = config["survivor"]["minimum_size"],
+    log:
+        f"{LOGDIR}/{{aligner}}/all/survivor.log"
+    shell:
+        "cat <(ls {input}) <(cat {params.svs_short}) > {output.fofn} ; \
+        SURVIVOR merge {output.fofn} {params.distance} {params.caller_support} \
+        {params.same_type} {params.same_strand} {params.estimate_distance}  \
+        {params.minimum_size} {output.vcf} 2> {log}"
