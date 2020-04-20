@@ -14,6 +14,22 @@ rule vcfanno_svs:
          vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} > {output} 2> {log.err}
          """
 
+rule vcfanno_all:
+    input:
+         f"{OUTDIR}/{{aligner}}/all_combined/genotypes.vcf"
+    output:
+         f"{OUTDIR}/{{aligner}}/all_annotated/svs_vcfanno.vcf"
+    log:
+         f"{LOGDIR}/{{aligner}}/annotate_all/annotate_vcfanno.err"
+    params:
+          conf=config["vcfanno_conf_svs"]
+    threads:
+           config["threads"]["all"]
+    shell:
+         """
+         vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} > {output} 2> {log}
+         """
+
 rule vcf2tab:
     input:
          f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/svs_{{annot}}.vcf"
