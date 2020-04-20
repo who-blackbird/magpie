@@ -170,6 +170,9 @@ def main():
                 query_start = int(query_start) - bnd_window
                 query_end = int(query_start) + bnd_window
 
+            if query_start == query_end:
+                query_end = int(query_end) + 1
+
             # print("Query: " + str(dic_element), query_start, query_end, query_type)
 
             if db in my_dict_data[dic_element]['dbs'].keys():
@@ -183,6 +186,11 @@ def main():
                     # print("\t", db, id_counter, db_start, db_end, sn, db_type)
                     if db_type == query_type:
                         MRPO = overlapping.reciprocal_percentage_overlap([query_start, query_end], [db_start, db_end])
+                        # try:
+                        #     MRPO = overlapping.reciprocal_percentage_overlap([query_start, query_end], [db_start, db_end])
+                        # except Exception:
+                        #     print("\t", query_start, query_end, id_counter, db_start, db_end, sn, db_type)
+
                         if MRPO >= overlap_threshold:
                             dic_element_value.append(sn)
 
@@ -208,7 +216,7 @@ def main():
     cols = list(chain.from_iterable([fixed_cols, samples_cols]))
 
     """
-    Melt data frame and filter ref genotypes
+    Melt data frame
     """
     outfile = df_pd[cols]
 
@@ -218,6 +226,9 @@ def main():
 
     outfile_melt['GT'] = outfile_melt['GT'].str.split(":", n=1, expand=True)
 
+    """
+    Filter out ref genotypes
+    """
     outfile_alt = outfile_melt.loc[-outfile_melt['GT'].isin(['0/0', './.', './0', '0/.', '0'])]
 
     cols_ordered = list(chain.from_iterable([['SAMPLE', 'GT'], list(fixed_cols)]))
@@ -227,11 +238,9 @@ def main():
     """
     Save to file
     """
-    final_output = outfile_out
-
     out_file_path = args.output
 
-    final_output.to_csv(out_file_path, sep='\t')
+    outfile_out.to_csv(out_file_path, sep='\t')
 
 
 if __name__ == '__main__':
