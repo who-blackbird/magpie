@@ -68,3 +68,11 @@ file="/rds/project/who1000/rds-who1000-wgs10k/WGS10K/data/projects/nanopore/us/r
 names=["wgs13k_s","wgs13k_e","wgs13k_id"]
 columns=[2,3,4]
 ops=["self","self","self"]
+
+
+#WGS13K blacklist
+[[annotation]]
+file="/rds/project/who1000/rds-who1000-wgs10k/WGS10K/data/projects/nanopore/us/resources/software/vcfanno/GRCh38/WGS13K_blacklist_v5_b38.bed.gz"
+names=["blacklist_s","blacklist_e","blacklist_id"]
+columns=[2,3,4]
+ops=["self","self","self"]
