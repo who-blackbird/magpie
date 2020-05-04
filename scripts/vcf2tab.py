@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Converts VEP VCF output to tab-delimited file."""
 
 import sys
