@@ -10,9 +10,11 @@ LOGDIR = config["logdir"]
 include: "rules/fqmerge.smk"
 include: "rules/alignment.smk"
 include: "rules/svcalling.smk"
+include: "rules/survivor.smk"
 include: "rules/annotate.smk"
 include: "rules/qc.smk"
 include: "rules/snps.smk"
+include: "rules/vcf.smk"
 
 # Functions #
 
@@ -25,15 +27,23 @@ CHROMOSOMES = getChr()
 
 rule fast:
     input:
-        expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
+        expand(f"{OUTDIR}/minimap2/qc/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.ovl.tab"
+        expand(f"{OUTDIR}/minimap2/qc/stats/{{sample}}/{{sample}}.stats",
+               sample=config["samples"]),
+        # f"{OUTDIR}/minimap2/sniffles_annotated/svs_vcfanno.ovl.tab"
 
 rule precise:
     input:
-        expand(f"{OUTDIR}/minimap2/coverage/{{sample}}.stats",
+        expand(f"{OUTDIR}/minimap2/qc/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        f"{OUTDIR}/minimap2/all_annotated/svs_vcfanno.ovl.tab"
+        expand(f"{OUTDIR}/minimap2/qc/stats/{{sample}}/{{sample}}.stats",
+               sample=config["samples"]),
+        expand(f"{OUTDIR}/minimap2/qc/read_length/{{sample}}.txt",
+               sample=config["samples"]),
+        expand(f"{OUTDIR}/minimap2/all_filtered/{{sample}}/{{sample}}.vcf",
+               sample=config["samples"]),
+        # f"{OUTDIR}/minimap2/all_annotated/svs_vcfanno.ovl.tab"
 
 rule snps:
     input:
