@@ -45,7 +45,7 @@ rule get_overlaps:
             --config {params.config_file} \
             --columns {params.columns_file} \
             --input {input} \
-            --output {output}
+            --output {output} 2> {log}
          """
 
          # rule annotsv_svs:
