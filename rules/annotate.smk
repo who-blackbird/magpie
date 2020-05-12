@@ -1,30 +1,14 @@
 rule vcfanno_svs:
     input:
-         f"{OUTDIR}/{{aligner}}/{{caller}}_combined/reformatted.vcf"
+        f"{OUTDIR}/{{aligner}}/all_merged/genotypes.vcf"
     output:
-          f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/svs_vcfanno.vcf"
+        f"{OUTDIR}/{{aligner}}/all_annotated/svs_vcfanno.vcf"
     log:
-       err=f"{LOGDIR}/{{aligner}}/annotate_{{caller}}/annotate_vcfanno.err"
+        f"{LOGDIR}/{{aligner}}/annotate_all/annotate_vcfanno.err"
     params:
-          conf=config["vcfanno_conf_svs"]
+         conf=config["vcfanno_conf_svs"]
     threads:
-           config["threads"]["all"]
-    shell:
-         """
-         vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} > {output} 2> {log.err}
-         """
-
-rule vcfanno_all:
-    input:
-         f"{OUTDIR}/{{aligner}}/all_combined/genotypes.vcf"
-    output:
-         f"{OUTDIR}/{{aligner}}/all_annotated/svs_vcfanno.vcf"
-    log:
-         f"{LOGDIR}/{{aligner}}/annotate_all/annotate_vcfanno.err"
-    params:
-          conf=config["vcfanno_conf_svs"]
-    threads:
-           config["threads"]["all"]
+         config["threads"]["all"]
     shell:
          """
          vcfanno -ends -permissive-overlap -p {threads} {params.conf} {input} > {output} 2> {log}
@@ -46,11 +30,11 @@ rule vcf2tab:
 
 rule get_overlaps:
     input:
-         f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/svs_{{annot}}.tab"
+        f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/svs_{{annot}}.tab"
     output:
-          f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/svs_{{annot}}.ovl.tab"
+        f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/svs_{{annot}}.ovl.tab"
     log:
-       f"{LOGDIR}/{{aligner}}/overlaps/overlaps_{{caller}}.err"
+        f"{LOGDIR}/{{aligner}}/overlaps/overlaps_{{caller}}.err"
     params:
           script=os.path.join(workflow.basedir, "scripts/overlap/main.py"),
           config_file=os.path.join(workflow.basedir, "config/overlap_config.ini"),
