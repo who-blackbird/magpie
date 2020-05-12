@@ -13,3 +13,14 @@ rule fq_merge:
         """
         cat {input} | xargs cat | gzip > {output}
         """
+
+rule fq_f5_annotation:
+    input:
+        fq = f"{OUTDIR}/fastq/{{sample}}.fastq.gz",
+        f5 = f"{OUTDIR}/fast5/{{sample}}",
+    output:
+        f"{OUTDIR}/fastq/{{sample}}.fastq.gz.index.readdb"
+    shell:
+        """
+        nanopolish index -d {input.f5} {input.fq}
+        """
