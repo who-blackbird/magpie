@@ -47,11 +47,11 @@ rule vcf_concat:
         [f"{OUTDIR}/{{aligner}}/{caller}_reformatted/{{sample}}/{{sample}}.vcf.gz"
          for caller in ["sniffles", "svim", "nanosv"]]
     output:
-        f"{OUTDIR}/{{aligner}}/all_concat/{{sample}}/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/intrasample_concat/{{sample}}/{{sample}}.vcf"
     params:
         svs_short = config["svs_short_fof"]
     log:
-        f"{LOGDIR}/{{aligner}}/all_concat/{{sample}}.err"
+        f"{LOGDIR}/{{aligner}}/intrasample_concat/{{sample}}.err"
     shell:
         """
         bcftools concat -a {input} `grep {wildcards.sample} {params.svs_short} | xargs` | \
@@ -61,14 +61,28 @@ rule vcf_concat:
 
 rule vcf_blacklist:
     input:
-        f"{OUTDIR}/{{aligner}}/all_merged/{{sample}}/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/intrasample_merged/{{sample}}/{{sample}}.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/all_filtered/{{sample}}/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/intrasample_filtered/{{sample}}/{{sample}}.vcf"
     params:
         blacklist = config["blacklist"]
     log:
-        f"{LOGDIR}/{{aligner}}/all_filter/{{sample}}.err"
+        f"{LOGDIR}/{{aligner}}/intrasample_filter/{{sample}}.err"
     shell:
         """
         cat <(grep ^# {input}) <(bedtools intersect -a {input} -b {params} -v -f 0.5) > {output} 
+        """
+
+rule vcf_change_type:
+    input:
+        f"{OUTDIR}/{{aligner}}/intrasample_filtered/{{sample}}/{{sample}}.vcf"
+    output:
+        f"{OUTDIR}/{{aligner}}/intrasample_changetype/{{sample}}/{{sample}}.vcf"
+    params:
+        os.path.join(workflow.basedir, "scripts/change_sv_type.py")
+    log:
+        f"{LOGDIR}/{{aligner}}/intrasample_changetype/{{sample}}.err"
+    shell:
+        """
+        python {params} --vcf {input} --out {output} 2> {log}
         """
