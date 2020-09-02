@@ -9,6 +9,7 @@ class Overlap:
         elif interval1[0] <= interval2[0] <= interval1[1]:
             start = interval2[0]
         else:
+            # start = 0.0
             raise Exception("Intervals are not overlapping")
 
         if interval2[0] <= interval1[1] <= interval2[1]:
@@ -16,6 +17,7 @@ class Overlap:
         elif interval1[0] <= interval2[1] <= interval1[1]:
             end = interval2[1]
         else:
+            # end = 0.0
             raise Exception("Intervals are not overlapping")
 
         return (start, end)
@@ -36,8 +38,8 @@ class Overlap:
         Given [0, 4] and [1, 10] returns 0.75
         """
         try:
-            overlap1 = self.overlap(interval1, interval2)
-            overlap2 = self.overlap(interval2, interval1)
+            self.overlap(interval1, interval2)
+            self.overlap(interval2, interval1)
         except Exception:
             return 0.0
 

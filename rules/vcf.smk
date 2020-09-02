@@ -59,23 +59,23 @@ rule vcf_concat:
         """
 
 
-rule vcf_blacklist:
-    input:
-        f"{OUTDIR}/{{aligner}}/intrasample_merged/{{sample}}/{{sample}}.vcf"
-    output:
-        f"{OUTDIR}/{{aligner}}/intrasample_filtered/{{sample}}/{{sample}}.vcf"
-    params:
-        blacklist = config["blacklist"]
-    log:
-        f"{LOGDIR}/{{aligner}}/intrasample_filter/{{sample}}.err"
-    shell:
-        """
-        cat <(grep ^# {input}) <(bedtools intersect -a {input} -b {params} -v -f 0.5) > {output} 
-        """
+# rule vcf_blacklist:
+#     input:
+#         f"{OUTDIR}/{{aligner}}/intrasample_merged/{{sample}}/{{sample}}.vcf"
+#     output:
+#         f"{OUTDIR}/{{aligner}}/intrasample_filtered/{{sample}}/{{sample}}.vcf"
+#     params:
+#         blacklist = config["blacklist"]
+#     log:
+#         f"{LOGDIR}/{{aligner}}/intrasample_filter/{{sample}}.err"
+#     shell:
+#         """
+#         cat <(grep ^# {input}) <(bedtools intersect -a {input} -b {params} -v -f 0.5) > {output}
+#         """
 
 rule vcf_change_type:
     input:
-        f"{OUTDIR}/{{aligner}}/intrasample_filtered/{{sample}}/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/intrasample_merged/{{sample}}/{{sample}}.vcf"
     output:
         f"{OUTDIR}/{{aligner}}/intrasample_changetype/{{sample}}/{{sample}}.vcf"
     params:

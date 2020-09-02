@@ -1,30 +1,30 @@
 SAMPLES = config["samples"].keys()
 
-rule survivor:
-    input:
-        [f"{OUTDIR}/{{aligner}}/{{caller}}_{{stage}}/{sample}/{sample}.vcf"
-            for sample in SAMPLES]
-    output:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_combined/{{stage}}.vcf",
-        fofn = f"{OUTDIR}/{{aligner}}/{{caller}}_combined/{{stage}}.fofn"
-    params:
-        SURVIVOR = config["survivor"]["src"],
-        distance = config["survivor"]["distance"],
-        caller_support = config["survivor"]["caller_support"],
-        same_type = config["survivor"]["same_type"],
-        same_strand = config["survivor"]["same_strand"],
-        estimate_distance = config["survivor"]["estimate_distance"],
-        minimum_size = config["survivor"]["minimum_size"],
-    log:
-        out = f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.out",
-        err = f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.err"
-    shell:
-        """
-        ls {input} > {output.fofn} ; \
-        {params.SURVIVOR} merge {output.fofn} {params.distance} {params.caller_support} \
-            {params.same_type} {params.same_strand} {params.estimate_distance}  \
-            {params.minimum_size} {output.vcf} 1> {log.out} 2> {log.err}
-        """
+# rule survivor:
+#     input:
+#         [f"{OUTDIR}/{{aligner}}/{{caller}}_{{stage}}/{sample}/{sample}.vcf"
+#             for sample in SAMPLES]
+#     output:
+#         vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_combined/{{stage}}.vcf",
+#         fofn = f"{OUTDIR}/{{aligner}}/{{caller}}_combined/{{stage}}.fofn"
+#     params:
+#         SURVIVOR = config["survivor"]["src"],
+#         distance = config["survivor"]["distance"],
+#         caller_support = config["survivor"]["caller_support"],
+#         same_type = config["survivor"]["same_type"],
+#         same_strand = config["survivor"]["same_strand"],
+#         estimate_distance = config["survivor"]["estimate_distance"],
+#         minimum_size = config["survivor"]["minimum_size"],
+#     log:
+#         out = f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.out",
+#         err = f"{LOGDIR}/{{aligner}}/{{caller}}/survivor_{{stage}}.err"
+#     shell:
+#         """
+#         ls {input} > {output.fofn} ; \
+#         {params.SURVIVOR} merge {output.fofn} {params.distance} {params.caller_support} \
+#             {params.same_type} {params.same_strand} {params.estimate_distance}  \
+#             {params.minimum_size} {output.vcf} 1> {log.out} 2> {log.err}
+#         """
 
 rule survivor_intra_sample:
     input:

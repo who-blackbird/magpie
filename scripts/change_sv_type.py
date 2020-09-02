@@ -42,6 +42,7 @@ def main():
     else:
         vcf_writer = vcf.Writer(open(output, 'w'), vcf_reader)
 
+
     """
     Edit ID field
     """
@@ -51,6 +52,15 @@ def main():
     for record in vcf_reader:
 
         vtype = str(record.INFO['SVTYPE'])
+        valt = str(record.ALT)
+        vchr1 = str(record.CHROM)
+        vchr2 = str(record.INFO["CHR2"])
+
+        # If intrachromosomal BND - change
+        if not valt.startswith('<') and vchr1 == vchr2:
+            # new_alt = ''.join(['<', vtype, '>'])
+            new_alt = ['<' + vtype + '>']
+            record.ALT = new_alt
 
         if vtype not in ['BND', 'TRA']:
 
@@ -93,6 +103,9 @@ def main():
                     new_type = ordered_dtypes_max[0][1]
 
                     record.INFO['SVTYPE'] = str(new_type)
+
+        #Change ID for all merged IDs
+        record.ID = record.samples[0]['ID']
 
         vcf_writer.write_record(record)
 

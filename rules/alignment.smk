@@ -9,7 +9,7 @@ rule minimap2_align:
         fq = f"{OUTDIR}/fastq/{{sample}}.fastq.gz",
         genome = config["genome"]
     output:
-        f"{OUTDIR}/minimap2/alignment_sorted/{{sample}}.bam"
+        f"{OUTDIR}/minimap2/alignment_sorted/{{sample}}/{{sample}}.bam"
     threads:
         config["threads"]["per_sample"]
     log:
@@ -54,9 +54,9 @@ rule samtools_sort:
 
 rule samtools_index:
     input:
-        f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam"
+        f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam"
     output:
-        f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai"
+        f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam.bai"
     log:
         f"{LOGDIR}/{{aligner}}/samtools_index/{{sample}}.log"
     shell:

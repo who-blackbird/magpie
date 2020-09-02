@@ -65,12 +65,13 @@ def main():
         record.ID = new_id
 
         if vstart != "0":
-            if vchr1 == vchr2:
-                vlen = (int(vend) - int(vstart)) + 1
-                if vlen >= 50:
-                    vcf_writer.write_record(record)
-            else:
-                vcf_writer.write_record(record)
+            vcf_writer.write_record(record)
+            # if vchr1 == vchr2:
+                # vlen = (int(vend) - int(vstart)) + 1
+                # if vlen >= 50:
+                #     vcf_writer.write_record(record)
+            # else:
+            #     vcf_writer.write_record(record)
 
 
 if __name__ == '__main__':

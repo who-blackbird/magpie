@@ -5,42 +5,43 @@ CHROMOSOMES = getChr()
 
 rule sniffles_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai"
+        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam.bai"
     output:
-        f"{OUTDIR}/{{aligner}}/sniffles_calls/{{sample}}/{{sample}}.vcf"
+        f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}/{{sample}}.vcf"
     params:
         se = config["sniffles_se"],
     threads:
-        config["threads"]["per_sample"]
-    log:
-        out = f"{LOGDIR}/{{aligner}}/sniffles_calls/{{sample}}.out",
-        err = f"{LOGDIR}/{{aligner}}/sniffles_calls/{{sample}}.err"
-    shell:
-        """
-        sniffles -s {params.se} --mapped_reads {input.bam} --vcf {output} --threads {threads} 1> {log.out} 2> {log.err}
-        """
-
-rule sniffles_genotype:
-    input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
-        ivcf = f"{OUTDIR}/{{aligner}}/sniffles_combined/calls.vcf"
-    output:
-        f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}/{{sample}}.vcf"
-    threads:
-        config["threads"]["per_sample"]
+        # config["threads"]["per_sample"]
+        1
     log:
         out = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.out",
         err = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.err"
     shell:
         """
-        sniffles --mapped_reads {input.bam} \
-            --vcf {output} \
-            --threads {threads} \
-            --report_seq \
-            --cluster \
-            --Ivcf {input.ivcf} 1> {log.out} 2> {log.err}
+        sniffles -s {params.se} --mapped_reads {input.bam} --vcf {output} --threads {threads} 1> {log.out} 2> {log.err}
         """
+
+# rule sniffles_genotype:
+#     input:
+#         bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam",
+#         ivcf = f"{OUTDIR}/{{aligner}}/sniffles_combined/calls.vcf"
+#     output:
+#         f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}/{{sample}}.vcf"
+#     threads:
+#         config["threads"]["per_sample"]
+#     log:
+#         out = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.out",
+#         err = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.err"
+#     shell:
+#         """
+#         sniffles --mapped_reads {input.bam} \
+#             --vcf {output} \
+#             --threads {threads} \
+#             --report_seq \
+#             --cluster \
+#             --Ivcf {input.ivcf} 1> {log.out} 2> {log.err}
+#         """
 
 rule nanosv_call:
     input:
@@ -65,8 +66,8 @@ rule nanosv_call:
 
 rule svim_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai",
+        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam.bai",
         genome = config["genome"]
     output:
         f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"

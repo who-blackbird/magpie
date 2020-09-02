@@ -34,7 +34,8 @@ rule get_overlaps:
     output:
         f"{OUTDIR}/{{aligner}}/{{caller}}_annotated/svs_{{annot}}.ovl.tab"
     log:
-        f"{LOGDIR}/{{aligner}}/overlaps/overlaps_{{caller}}.err"
+        err=f"{LOGDIR}/{{aligner}}/overlaps/overlaps_{{caller}}.err",
+        out=f"{LOGDIR}/{{aligner}}/overlaps/overlaps_{{caller}}.out"
     params:
           script=os.path.join(workflow.basedir, "scripts/overlap/main.py"),
           config_file=os.path.join(workflow.basedir, "config/overlap_config.ini"),
@@ -45,7 +46,8 @@ rule get_overlaps:
             --config {params.config_file} \
             --columns {params.columns_file} \
             --input {input} \
-            --output {output} 2> {log}
+            --output {output} \
+            --verbose 1> {log.out} 2> {log.err}
          """
 
          # rule annotsv_svs:

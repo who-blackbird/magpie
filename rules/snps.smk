@@ -2,8 +2,8 @@ SAMPLES = config["samples"].keys()
 
 rule samtools_split:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}.bam.bai",
+        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam",
+        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam.bai",
     output:
         bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
         bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai"

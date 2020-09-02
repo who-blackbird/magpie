@@ -18,13 +18,23 @@ fixed:
     - ngc38
     - wgs13k
     - ngclov
-    - ens_trans_ov_id
-    - ens_exon_ov_id
-    - dbvar_ov_id
-    - decipher_ov_id
+    - rmk_id
     - right_rmk_id
     - left_rmk_id
-    
+    - bkl
+    - right_bkl_s
+    - right_bkl_e
+    - left_bkl_s
+    - left_bkl_e
+    - ens_trans_ov_id
+    - right_ens_trans_ov_id
+    - left_ens_trans_ov_id
+    - ens_exon_ov_id
+    - right_ens_exon_ov_id
+    - left_ens_exon_ov_id
+    - dbvar_ov_id
+    - decipher_ov_id
+
 samples:
     - A002727
     - A008220
