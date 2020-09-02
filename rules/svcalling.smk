@@ -22,27 +22,6 @@ rule sniffles_call:
         sniffles -s {params.se} --mapped_reads {input.bam} --vcf {output} --threads {threads} 1> {log.out} 2> {log.err}
         """
 
-# rule sniffles_genotype:
-#     input:
-#         bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam",
-#         ivcf = f"{OUTDIR}/{{aligner}}/sniffles_combined/calls.vcf"
-#     output:
-#         f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}/{{sample}}.vcf"
-#     threads:
-#         config["threads"]["per_sample"]
-#     log:
-#         out = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.out",
-#         err = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.err"
-#     shell:
-#         """
-#         sniffles --mapped_reads {input.bam} \
-#             --vcf {output} \
-#             --threads {threads} \
-#             --report_seq \
-#             --cluster \
-#             --Ivcf {input.ivcf} 1> {log.out} 2> {log.err}
-#         """
-
 rule nanosv_call:
     input:
         bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",

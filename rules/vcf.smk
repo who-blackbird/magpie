@@ -58,7 +58,6 @@ rule vcf_concat:
         bcftools sort - -o {output}
         """
 
-
 # rule vcf_blacklist:
 #     input:
 #         f"{OUTDIR}/{{aligner}}/intrasample_merged/{{sample}}/{{sample}}.vcf"
