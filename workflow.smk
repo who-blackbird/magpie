@@ -1,10 +1,13 @@
+## Import libraries
 import os
 import gzip
 import sys
 
+##Directories
 OUTDIR = config["outdir"]
 LOGDIR = config["logdir"]
 
+##Include rules
 include: "rules/fqmerge.smk"
 include: "rules/alignment.smk"
 include: "rules/svcalling.smk"
@@ -15,26 +18,26 @@ include: "rules/snps.smk"
 include: "rules/vcf.smk"
 # include: "rules/methylation.smk" ##In progr
 
-# Functions #
+##Functions
 
 def getChr():
     return list(range(1,23)) + ['X', 'Y', 'MT']
 
 CHROMOSOMES = getChr()
 
-# Target rules #
+##Target rules
 
 rule svs:
     input:
-        expand(f"{OUTDIR}/minimap2/qc/coverage/{{sample}}.stats",
+        expand(f"{OUTDIR}/qc/coverage/{{sample}}.stats",
                sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/qc/stats/{{sample}}/{{sample}}.stats",
+        expand(f"{OUTDIR}/qc/stats/{{sample}}/{{sample}}.stats",
                sample=config["samples"]),
-        expand(f"{OUTDIR}/minimap2/qc/read_length/{{sample}}.txt",
+        expand(f"{OUTDIR}/qc/read_length/{{sample}}.txt",
                sample=config["samples"]),
-        f"{OUTDIR}/minimap2/all_annotated/svs_vcfanno.ovl.tab",
+        f"{OUTDIR}/all_annotated/svs_vcfanno.ovl.tab",
 
 rule snps:
     input:
-        expand(f"{OUTDIR}/minimap2/longshot_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
+        expand(f"{OUTDIR}/longshot_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
             chromosome=CHROMOSOMES)

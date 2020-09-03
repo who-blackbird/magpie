@@ -2,13 +2,13 @@ SAMPLES = config["samples"].keys()
 
 rule samtools_split:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam.bai",
+        bam = f"{OUTDIR}/alignment_sorted/{{sample}}/{{sample}}.bam",
+        bai = f"{OUTDIR}/alignment_sorted/{{sample}}/{{sample}}.bam.bai",
     output:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai"
+        bam = f"{OUTDIR}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
+        bai = f"{OUTDIR}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai"
     log:
-        f"{LOGDIR}/{{aligner}}/samtools_split/{{sample}}/{{sample}}-{{chromosome}}.log"
+        f"{LOGDIR}/samtools_split/{{sample}}/{{sample}}-{{chromosome}}.log"
     shell:
         """
         samtools view -h {input.bam} {wildcards.chromosome} -o {output.bam} 2> {log}
@@ -17,12 +17,12 @@ rule samtools_split:
 
 rule longshot_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai",
+        bam = f"{OUTDIR}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
+        bai = f"{OUTDIR}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai",
     output:
-        vcf = temp(f"{OUTDIR}/{{aligner}}/longshot_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf"),
+        vcf = temp(f"{OUTDIR}/longshot_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf"),
     log:
-        f"{LOGDIR}/{{aligner}}/longshot_split/{{sample}}/{{sample}}-{{chromosome}}.snps.log"
+        f"{LOGDIR}/longshot_split/{{sample}}/{{sample}}-{{chromosome}}.snps.log"
     params:
         genome = config["genome"]
     shell:
@@ -32,12 +32,12 @@ rule longshot_call:
 
 rule bgzip_and_tabix:
     input:
-        f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf"
+        f"{OUTDIR}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf"
     output:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf.gz",
-        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf.gz.tbi"
+        vcf = f"{OUTDIR}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{caller}}_split/{{sample}}/{{sample}}-{{chromosome}}.snps.vcf.gz.tbi"
     log:
-        f"{LOGDIR}/{{aligner}}/{{caller}}_index/{{sample}}/{{sample}}-{{chromosome}}.index.log"
+        f"{LOGDIR}/{{caller}}_index/{{sample}}/{{sample}}-{{chromosome}}.index.log"
     shell:
         """
         bgzip -c {input} > {output.vcf}
@@ -46,13 +46,13 @@ rule bgzip_and_tabix:
 
 rule merge_vcfs:
     input:
-        vcf = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}/{sample}-{{chromosome}}.snps.vcf.gz" for sample in SAMPLES],
-        idx = [f"{OUTDIR}/{{aligner}}/{{caller}}_split/{sample}/{sample}-{{chromosome}}.snps.vcf.gz.tbi" for sample in SAMPLES]
+        vcf = [f"{OUTDIR}/{{caller}}_split/{sample}/{sample}-{{chromosome}}.snps.vcf.gz" for sample in SAMPLES],
+        idx = [f"{OUTDIR}/{{caller}}_split/{sample}/{sample}-{{chromosome}}.snps.vcf.gz.tbi" for sample in SAMPLES]
     output:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
-        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
+        vcf = f"{OUTDIR}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
     log:
-       f"{LOGDIR}/{{aligner}}/{{caller}}_merge/all-{{chromosome}}.log"
+       f"{LOGDIR}/{{caller}}_merge/all-{{chromosome}}.log"
     shell:
         """
         bcftools merge --force-samples {input.vcf} -O z -o {output.vcf}
@@ -61,13 +61,13 @@ rule merge_vcfs:
 
 rule vcfanno:
     input:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
-        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
+        vcf = f"{OUTDIR}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
     output:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_vcfanno_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
-        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_vcfanno_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
+        vcf = f"{OUTDIR}/{{caller}}_vcfanno_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
+        idx = f"{OUTDIR}/{{caller}}_vcfanno_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
     log:
-        f"{LOGDIR}/{{aligner}}/{{caller}}_{{annot}}annotation/all-{{chromosome}}.annot.log"
+        f"{LOGDIR}/{{caller}}_{{annot}}annotation/all-{{chromosome}}.annot.log"
     params:
         conf = config["vcfanno_conf_snvs"]
     threads:
@@ -80,15 +80,15 @@ rule vcfanno:
 
 rule vep:
     input:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
-        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
+        vcf = f"{OUTDIR}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz",
+        idx = f"{OUTDIR}/{{caller}}_merged/all-{{chromosome}}.snps.vcf.gz.tbi"
     output:
-        vcf = f"{OUTDIR}/{{aligner}}/{{caller}}_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
-        idx = f"{OUTDIR}/{{aligner}}/{{caller}}_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
+        vcf = f"{OUTDIR}/{{caller}}_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz",
+        idx = f"{OUTDIR}/{{caller}}_vep_annotated/all-{{chromosome}}.snps.annot.vcf.gz.tbi"
     params:
         os.path.join(workflow.basedir, "scripts/vep_annotation.sh"),
     log:
-        f"{LOGDIR}/{{aligner}}/{{caller}}_vep_annotation/all-{{chromosome}}.annot.log"
+        f"{LOGDIR}/{{caller}}_vep_annotation/all-{{chromosome}}.annot.log"
     shell:
         """
         {params} {input.vcf} {output.vcf} {wildcards.chromosome}

@@ -5,18 +5,18 @@ CHROMOSOMES = getChr()
 
 rule sniffles_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam.bai"
+        bam = f"{OUTDIR}/alignment_sorted/{{sample}}/{{sample}}.bam",
+        bai = f"{OUTDIR}/alignment_sorted/{{sample}}/{{sample}}.bam.bai"
     output:
-        f"{OUTDIR}/{{aligner}}/sniffles_genotypes/{{sample}}/{{sample}}.vcf"
+        f"{OUTDIR}/sniffles_genotypes/{{sample}}/{{sample}}.vcf"
     params:
         se = config["sniffles_se"],
     threads:
         # config["threads"]["per_sample"]
         1
     log:
-        out = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.out",
-        err = f"{LOGDIR}/{{aligner}}/sniffles_genotypes/{{sample}}.err"
+        out = f"{LOGDIR}/sniffles_genotypes/{{sample}}.out",
+        err = f"{LOGDIR}/sniffles_genotypes/{{sample}}.err"
     shell:
         """
         sniffles -s {params.se} --mapped_reads {input.bam} --vcf {output} --threads {threads} 1> {log.out} 2> {log.err}
@@ -24,17 +24,17 @@ rule sniffles_call:
 
 rule nanosv_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai"
+        bam = f"{OUTDIR}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam",
+        bai = f"{OUTDIR}/alignment_split/{{sample}}/{{sample}}-{{chromosome}}.bam.bai"
     output:
-        f"{OUTDIR}/{{aligner}}/nanosv_genotypes_split/{{sample}}/{{sample}}-{{chromosome}}.vcf"
+        f"{OUTDIR}/nanosv_genotypes_split/{{sample}}/{{sample}}-{{chromosome}}.vcf"
     threads:
         1
     params:
         bed = config["annotbed"],
         sambamba = config["sambamba_path"]
     log:
-        f"{LOGDIR}/{{aligner}}/nanosv_genotypes_split/{{sample}}-{{chromosome}}.log"
+        f"{LOGDIR}/nanosv_genotypes_split/{{sample}}-{{chromosome}}.log"
     shell:
         """
         NanoSV -s {params.sambamba} \
@@ -45,15 +45,15 @@ rule nanosv_call:
 
 rule svim_call:
     input:
-        bam = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam",
-        bai = f"{OUTDIR}/{{aligner}}/alignment_sorted/{{sample}}/{{sample}}.bam.bai",
+        bam = f"{OUTDIR}/alignment_sorted/{{sample}}/{{sample}}.bam",
+        bai = f"{OUTDIR}/alignment_sorted/{{sample}}/{{sample}}.bam.bai",
         genome = config["genome"]
     output:
-        f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
+        f"{OUTDIR}/svim_calls/{{sample}}/final_results.vcf"
     params:
-        outdir=f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}"
+        outdir=f"{OUTDIR}/svim_calls/{{sample}}"
     log:
-        f"{LOGDIR}/{{aligner}}/svim_calls/{{sample}}.log"
+        f"{LOGDIR}/svim_calls/{{sample}}.log"
     shell:
         """
         svim alignment --sample {wildcards.sample} \
@@ -62,11 +62,11 @@ rule svim_call:
 
 rule filter_svim:
     input:
-        f"{OUTDIR}/{{aligner}}/svim_calls/{{sample}}/final_results.vcf"
+        f"{OUTDIR}/svim_calls/{{sample}}/final_results.vcf"
     output:
-        f"{OUTDIR}/{{aligner}}/svim_genotypes/{{sample}}/{{sample}}.vcf"
+        f"{OUTDIR}/svim_genotypes/{{sample}}/{{sample}}.vcf"
     log:
-        f"{LOGDIR}/{{aligner}}/svim_genotype/{{sample}}.filter.log"
+        f"{LOGDIR}/svim_genotype/{{sample}}.filter.log"
     shell:
         """
         cat {input} | \

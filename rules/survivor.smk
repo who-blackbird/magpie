@@ -2,10 +2,10 @@ SAMPLES = config["samples"].keys()
 
 rule survivor_intra_sample:
     input:
-        f"{OUTDIR}/{{aligner}}/intrasample_concat/{{sample}}/{{sample}}.vcf"
+        f"{OUTDIR}/intrasample_concat/{{sample}}/{{sample}}.vcf"
     output:
-        vcf = f"{OUTDIR}/{{aligner}}/intrasample_merged/{{sample}}/{{sample}}.vcf",
-        fofn = f"{OUTDIR}/{{aligner}}/intrasample_merged/{{sample}}/{{sample}}.fofn"
+        vcf = f"{OUTDIR}/intrasample_merged/{{sample}}/{{sample}}.vcf",
+        fofn = f"{OUTDIR}/intrasample_merged/{{sample}}/{{sample}}.fofn"
     params:
         SURVIVOR = config["survivor"]["src"],
         distance = config["survivor"]["distance"],
@@ -15,7 +15,7 @@ rule survivor_intra_sample:
         estimate_distance = -1,
         minimum_size = -1,
     log:
-        f"{LOGDIR}/{{aligner}}/intrasample_merged/survivor.log"
+        f"{LOGDIR}/intrasample_merged/survivor.log"
     shell:
         """
         cat <(ls {input}) > {output.fofn}; \
@@ -26,11 +26,11 @@ rule survivor_intra_sample:
 
 rule survivor_inter_sample:
     input:
-        [f"{OUTDIR}/{{aligner}}/intrasample_changetype/{sample}/{sample}.vcf"
+        [f"{OUTDIR}/intrasample_changetype/{sample}/{sample}.vcf"
                for sample in SAMPLES]
     output:
-        vcf = f"{OUTDIR}/{{aligner}}/all_merged/genotypes.vcf",
-        fofn = f"{OUTDIR}/{{aligner}}/all_merged/samples.fofn"
+        vcf = f"{OUTDIR}/all_merged/genotypes.vcf",
+        fofn = f"{OUTDIR}/all_merged/samples.fofn"
     params:
         SURVIVOR = config["survivor"]["src"],
         distance = config["survivor"]["distance"],
@@ -40,7 +40,7 @@ rule survivor_inter_sample:
         estimate_distance = -1,
         minimum_size = -1,
     log:
-        f"{LOGDIR}/{{aligner}}/all_merge/survivor.log"
+        f"{LOGDIR}/all_merge/survivor.log"
     shell:
         """
         cat <(ls {input}) > {output.fofn} ; \

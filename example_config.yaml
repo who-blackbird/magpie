@@ -18,10 +18,9 @@ survivor:
 annotbed:
     /path/to/bed
 
-#For 10 nodes= 320cpu
 threads:
-    per_sample: 10 #320/62
-    per_chr: 12 #320/25
+    per_sample: 10
+    per_chr: 12
     all: 320
 
 genome:
